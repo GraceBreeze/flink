@@ -2,6 +2,7 @@ package com.atguigu.day03;
 
 import com.atguigu.bean.WaterSensor;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -34,11 +35,17 @@ public class Flink09_TransForm_Reduce {
         KeyedStream<WaterSensor, Tuple> keyedStream = waterSensorDStream.keyBy("id");
 
         //TODO 5 使用ruduce求Vc的最大值
-        /*SingleOutputStreamOperator<WaterSensor> max = keyedStream.max("vc");
-        max.print();*/
+        keyedStream.reduce(new ReduceFunction<WaterSensor>() {
 
-        SingleOutputStreamOperator<WaterSensor> maxByTrue = keyedStream.maxBy("vc", true);
-        maxByTrue.print();
+            /*
+            * value1 上一次聚合后的结果（历史数据）
+            * value2 当前进来的数据
+            * */
+            @Override
+            public WaterSensor reduce(WaterSensor value1, WaterSensor value2) throws Exception {
+                return new WaterSensor(value1.getId(),value1.getTs(),Math.max(value1.getVc(),value2.getVc()));
+            }
+        }).print();
 
         env.execute();
 
