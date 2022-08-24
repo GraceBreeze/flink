@@ -1,5 +1,6 @@
 package com.atguigu.day01;
 
+import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -18,6 +19,9 @@ public class Flink02_Stream_Bounded_WordCount {
     public static void main(String[] args) {
         // 1. 创建流式执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        //设置运行时执行模式   1STREAMING(默认)/2BATCH/3AUTOMATIC
+        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
          // 2. 读取文件
         DataStreamSource<String> lineDSS = env.readTextFile("input/word.txt");
         // 3. 转换数据格式
