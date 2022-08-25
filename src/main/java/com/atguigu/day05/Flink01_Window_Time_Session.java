@@ -55,7 +55,6 @@ public class Flink01_Window_Time_Session {
                 out.collect(msg);
             }
         });
-
         process.print();
         window.sum(1).print();
 
