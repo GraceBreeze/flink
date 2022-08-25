@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.ProcessingTimeSessionWindows;
-import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.SessionWindowTimeGapExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
@@ -19,7 +19,7 @@ import org.apache.flink.util.Collector;
  * @author GraceBreeze
  * @create 2022-08-24 22:54
  */
-public class Flink01_Window_Time_Session {
+public class Flink02_TimeWindow_Session_WithDynamic {
     public static void main(String[] args) throws Exception {
         //1.获取流的执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -43,11 +43,17 @@ public class Flink01_Window_Time_Session {
         //4.将相同的单词聚合到同一个分区
         KeyedStream<Tuple2<String, Long>, Tuple> keyedStream = wordToOneDStream.keyBy(0);
 
-        //TODO 5.开启一个基于处理时间的会话窗口会话间隔为3秒（静态）
-        WindowedStream<Tuple2<String, Long>, Tuple, TimeWindow> window = keyedStream.window(ProcessingTimeSessionWindows.withGap(Time.seconds(3)));
+        //TODO 5.开启一个基于处理时间的会话窗口会话间隔为动态
+        /*WindowedStream<Tuple2<String, Long>, Tuple, TimeWindow> window = keyedStream.window(ProcessingTimeSessionWindows
+                .withDynamicGap(new SessionWindowTimeGapExtractor<Tuple2<String, Long>>() {
+                    @Override
+                    public long extract(Tuple2<String, Long> element) {
+                        return element;
+                    }
+                })));*/
 
 
-        SingleOutputStreamOperator<String> process = window.process(new ProcessWindowFunction<Tuple2<String, Long>, String, Tuple, TimeWindow>() {
+/*        SingleOutputStreamOperator<String> process = window.process(new ProcessWindowFunction<Tuple2<String, Long>, String, Tuple, TimeWindow>() {
             @Override
             public void process(Tuple tuple, Context context, Iterable<Tuple2<String, Long>> elements, Collector<String> out) throws Exception {
                 String msg =
@@ -57,9 +63,9 @@ public class Flink01_Window_Time_Session {
             }
         });
         process.print();
-        window.sum(1).print();
+//        window.sum(1).print();
 
-        env.execute();
+        env.execute();*/
 
 
     }
