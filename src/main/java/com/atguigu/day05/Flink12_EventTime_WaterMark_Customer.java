@@ -73,7 +73,6 @@ public class Flink12_EventTime_WaterMark_Customer {
 
         });
         process.print();
-
         env.execute();
     }
 
