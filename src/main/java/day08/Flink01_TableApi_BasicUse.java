@@ -43,5 +43,4 @@ public class Flink01_TableApi_BasicUse {
             e.printStackTrace();
         }
     }
-
 }
